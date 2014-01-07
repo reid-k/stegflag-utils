@@ -1,0 +1,32 @@
+#!/usr/bin/env python2
+#coding=UTF-8
+
+import os
+import sys
+
+os.chdir(os.getcwd())
+
+colorbar = """<font color="#">█</font>"""
+out = ""
+
+if (len(sys.argv)!=2):
+    print("""Usage: stegflag-html "fingerprint" """)
+    sys.exit()
+fingerprint = sys.argv[1]
+
+while (fingerprint.find(":")+1):
+    cutpoint = fingerprint.find(":")
+    fingerprint = fingerprint[:cutpoint]+fingerprint[(cutpoint+1):]
+
+basefile = open((fingerprint+".html"),"w")
+print("Writing to "+fingerprint+".html ... ")
+
+while (len(fingerprint)>5):
+    out += colorbar[:14]+fingerprint[:6]+colorbar[14:]
+    fingerprint = fingerprint[6:]
+
+out += "+"+fingerprint
+
+basefile.write(out)
+basefile.close()
+print("Done.\n")

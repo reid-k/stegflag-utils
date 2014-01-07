@@ -1,0 +1,55 @@
+#!/usr/bin/env python2
+
+import sys
+
+#Image based on https://en.wikipedia.org/wiki/File:Free-speech-flag.svg
+#Special thanks to John Marcotte and relevant Wikimedia Commons editors
+#Thank you for contributing to the public domain
+#TODO: Add vars for insertion points
+#TODO: Clean up and shorten names
+basefile_head="""<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="480" height="288">
+"""
+basefile_colorbar="""<rect fill="#" width="" height="288" x=""/>
+"""
+
+basefile_tail="""<text font-size="32" fill="white" font-family="Bitstream Vera Sans" x="388.1" y="269.3">+<tspan font-size="48"></tspan></text>
+</svg>"""
+width = 100
+fingerprint = ""
+out = ""
+currentx = 0
+
+print("Arguments: "+str(len(sys.argv)))
+
+#TODO: This could be simpler.
+if (1!=(1<len(sys.argv)<4)):
+    print("""Usage: fing2flag "fingerprint" width""")
+    sys.exit()
+if (len(sys.argv)==3):
+    width = sys.argv[2]
+if (1<len(sys.argv)<4):
+    fingerprint = sys.argv[1]
+
+
+while (fingerprint.find(":")+1):
+    cutpoint = fingerprint.find(":")
+    fingerprint = fingerprint[:cutpoint]+fingerprint[(cutpoint+1):]
+
+basefile = open((fingerprint+".svg"),"w")
+print("Writing to "+fingerprint+".svg... ")
+
+#Assemble the file
+out += basefile_head
+
+while (len(fingerprint)>5):
+    out += basefile_colorbar[:13]+fingerprint[:6]+basefile_colorbar[13:22]+str(width)+basefile_colorbar[22:40]+str(currentx)+basefile_colorbar[40:]
+    fingerprint = fingerprint[6:]
+    currentx += width
+
+#TODO: Calculate text size and placement (Allows for more hash types to fit)
+out += basefile_tail[:89]+fingerprint+basefile_tail[89:]
+
+basefile.write(out)
+basefile.close()
+print("Done.\n")
